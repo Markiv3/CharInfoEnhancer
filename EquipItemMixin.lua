@@ -1,10 +1,13 @@
-local addonName = ...
+local addonName, addon = ...
 local frame = _G[addonName]
+local L = addon.L
 
 local ITEM_LEVEL_STR_1 = string.gsub(ITEM_LEVEL, "%%d", "(.+)")
 local ITEM_LEVEL_STR_2 = string.gsub(ITEM_LEVEL, "%%d", "(.+) \((.+)\)")
-local ENCHANT_REQ_STR = "마법부여가 가능한 부위입니다."
-local ADDSLOT_REQ_STR = "보석홈을 추가 가능한 부위입니다."
+local ENCHANT_REQ_STR = L["canenchant"]
+--local ENCHANT_REQ_STR = "마법부여가 가능한 부위입니다."
+local ADDSLOT_REQ_STR = L["cangem"]
+--local ADDSLOT_REQ_STR = "보석홈을 추가 가능한 부위입니다."
 
 local MAX_DETAIL_ICON = 3
 local MAX_DETAIL_ICON_LINE = 2
@@ -289,12 +292,14 @@ function EquipItemUIMixin:SetUpUI(slotFrame)
 
 	local font, _, flags = NumberFontNormal:GetFont()
 
+	-- Ilvl string
 	self.UpperStr = self.slotFrame:CreateFontString(nil, "OVERLAY")
-	self.UpperStr:SetFont(font, 12, flags)
+	self.UpperStr:SetFont(font, 14, flags)
 	self.UpperStr:SetPoint("TOP", self.slotFrame, "TOP", 0, -3)
 	self.UpperStr:SetTextColor(1,1,1)
 	self.UpperStr:Hide()
 
+	-- Durability string
 	self.BottomStr = self.slotFrame:CreateFontString(nil, "OVERLAY")
 	self.BottomStr:SetFont(font, 10, flags)
 	self.BottomStr:SetPoint("BOTTOM", self.slotFrame, "BOTTOM", 0, 3)

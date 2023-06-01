@@ -1,5 +1,6 @@
-local addonName = ...
+local addonName, addon = ...
 local frame = _G[addonName]
+local L = addon.L
 
 local LASTLOCATION_NIL = -1
 
