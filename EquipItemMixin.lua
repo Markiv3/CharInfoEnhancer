@@ -254,13 +254,13 @@ function EquipItemMixin:CanAddSlot()
 	if not self:IsEquipped() then return false end
 	if not self:GetItemLink() then return false end
 	
-	local _, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = GetItemInfo(self:GetItemLink())
+	local _, _, itemQuality, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = GetItemInfo(self:GetItemLink())
 	local sockets = self:GetSockets()
 	local gems = self.itemLinkData.gems
-	local slotCount = (sockets and #sockets or 0) + (gems and #gems or 0)
+	local slotCount = (sockets and #sockets or 0) + (self.itemLinkData.gemCount)
 
-	-- 용군단 혹은 346렙 이상 템 (슬롯이 3개 미만인 목)
-	if (expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346) then
+	-- 용군단 혹은 346렙 이상 에픽 템 (슬롯이 3개 미만인 목) / Dragonflight, ilvl 346 or higher, and epic quality (less than 3 slots)
+	if ((expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346)) and (itemQuality == Enum.ItemQuality.Epic) then
 		if itemEquipLoc == "INVTYPE_NECK" and slotCount < 3 then
 			return true
 		end
