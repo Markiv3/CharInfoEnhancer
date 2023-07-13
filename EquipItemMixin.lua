@@ -40,6 +40,7 @@ local function ParseItemLink(itemLink)
 
 	local itemLinkData = {}
 	itemLinkData.itemID = elements[2]
+	itemLinkData.gemCount = 0
 
 	for i = 4, 6 do
 		local gemID = elements[i]
@@ -47,6 +48,7 @@ local function ParseItemLink(itemLink)
 			itemLinkData.gems = itemLinkData.gems or {}
 			itemLinkData.gems[i-3] = {}
 			itemLinkData.gems[i-3].gemID = gemID
+			itemLinkData.gemCount = itemLinkData.gemCount + 1
 		end
 	end
 	
