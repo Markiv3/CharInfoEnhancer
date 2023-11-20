@@ -52,7 +52,7 @@ function frame:OnTooltipSetUnit(tooltip, tooltipData)
 		GameTooltip:Show()
 		return;
 	end
-	if not CanInspect(unit) or not CheckInteractDistance(unit, 1) or self:IsInspectFrameOpen() then
+	if InCombatLockdown() or not CanInspect(unit) or not CheckInteractDistance(unit, 1) or self:IsInspectFrameOpen() then
 		return
 	end
 
