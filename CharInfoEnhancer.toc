@@ -3,7 +3,7 @@
 ## Notes: Enhanced character window and item level display
 ## Notes-koKR: 캐릭터창 정보 및 캐릭터 아이템 레벨 관련 기능 강화
 ## Author: Alkaid
-## Version: 10.2.0-1 (2023/11/09)
+## Version: 10.2.0-2 (2023/11/20)
 ## SavedVariables: CharInfoEnhancerOption
 ## IconAtlas: warfront_asset_armor_upgrade_3
 
