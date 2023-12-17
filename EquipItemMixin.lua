@@ -226,9 +226,9 @@ function EquipItemMixin:CanEnchant()
 	end
 
 	-- 격아 이후 확팩만 고려한다.
-	-- 용군단 혹은 346렙 이상 템 (무기/반지/다리/손목/발/가슴/망토/허리)
+	-- 용군단 혹은 346렙 이상 템 (무기/반지/다리/손목/발/가슴/망토/허리 + 머리)
 	if (expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346) then
-		if itemClassID == Enum.ItemClass.Weapon or itemEquipLoc == "INVTYPE_FINGER" or itemEquipLoc == "INVTYPE_LEGS" or itemEquipLoc == "INVTYPE_WRIST" or itemEquipLoc == "INVTYPE_FEET" or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE" or itemEquipLoc == "INVTYPE_CLOAK" or itemEquipLoc == "INVTYPE_WAIST" then
+		if itemClassID == Enum.ItemClass.Weapon or itemEquipLoc == "INVTYPE_FINGER" or itemEquipLoc == "INVTYPE_LEGS" or itemEquipLoc == "INVTYPE_WRIST" or itemEquipLoc == "INVTYPE_FEET" or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE" or itemEquipLoc == "INVTYPE_CLOAK" or itemEquipLoc == "INVTYPE_WAIST" or itemEquipLoc == "INVTYPE_HEAD" then
 			return true
 		end
 	-- 어둠땅 혹은 158렙 이상 템 (무기/반지/장갑/손목/발/가슴/망토)
