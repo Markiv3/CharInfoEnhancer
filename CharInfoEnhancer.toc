@@ -1,9 +1,9 @@
-## Interface: 100200
+## Interface: 100206
 ## Title: Character Info Enhancer
 ## Notes: Enhanced character window and item level display
 ## Notes-koKR: 캐릭터창 정보 및 캐릭터 아이템 레벨 관련 기능 강화
 ## Author: Alkaid
-## Version: 10.2.0-3 (2023/12/16)
+## Version: 10.2.6-1 (2024/04/28)
 ## SavedVariables: CharInfoEnhancerOption
 ## IconAtlas: warfront_asset_armor_upgrade_3
 

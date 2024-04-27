@@ -350,7 +350,7 @@ function frame:UpdatePlayerEquipItem()
 end
 
 function frame:UpdateInspectEquipItem()
-	if not self:IsInspectFrameOpen() then
+	if not self:IsInspectFrameOpen() or self.InspectEquipUI == nil then
 		return
 	end
 
