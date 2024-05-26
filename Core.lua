@@ -85,6 +85,8 @@ function frame:PLAYER_LOGIN()
 		frame:OnPaperDollFrame_SetLabelAndText(statFrame, label, text, isPercentage, numericValue)
 		end)
 
+	hooksecurefunc("PaperDollItemSlotButton_Update", function(slotButton) frame:OnPaperDollItemSlotButton_Update(slotButton) end)
+
 	_G["PaperDollFrame"]:HookScript("OnShow", function(self, ...)
 		frame:UpdatePlayerEquipItem()
 		frame:UpdatePlayerDurability()
@@ -204,9 +206,11 @@ function frame:ADDON_LOADED(addon)
 		hooksecurefunc("InspectSwitchTabs", function(newwID)
 			if newwID == 1 then self.InspectItemLevelStr:Show() 
 			else self.InspectItemLevelStr:Hide() end	 
-			end)		
+			end)				
+		
+		hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(slotButton) frame:OnInspectPaperDollItemSlotButton_Update(slotButton) end)
 
-			-- 살펴보기창 UI 추가
+		-- 살펴보기창 UI 추가
 		local font, _, flags = NumberFontNormal:GetFont()
 		self.InspectItemLevelStr = InspectFrame:CreateFontString(nil, "OVERLAY")
 		self.InspectItemLevelStr:SetFont(font, 12, flags)
@@ -330,6 +334,59 @@ function frame:OnPaperDollFrame_SetLabelAndText(statFrame, label, text, isPercen
 	if isPercentage or label == STAT_HASTE then
 		text = format("%.2f%%", numericValue);
 		statFrame.Value:SetText(text);
+	end
+end
+
+function frame:OnPaperDollItemSlotButton_Update(slotButton)
+	self:OnSocketDisplaySetItem(slotButton, "player", self.PlayerEquipUI[slotButton:GetID()])
+end
+
+function frame:OnInspectPaperDollItemSlotButton_Update(slotButton)
+	self:OnSocketDisplaySetItem(slotButton, InspectFrame.unit, self.InspectEquipUI[slotButton:GetID()])
+end
+
+function frame:OnSocketDisplaySetItem(slotButton, unit, equipItem)
+	if slotButton.SocketDisplay == nil then return end
+	
+	local item = GetInventoryItemLink(unit, slotButton:GetID())
+	local showSocketDisplay = item ~= nil and PlayerGetTimerunningSeasonID() ~= nil;
+	slotButton.SocketDisplay:SetShown(showSocketDisplay);
+
+	if not showSocketDisplay then
+		return;
+	end
+	
+	local sockets = equipItem:GetSockets()
+	for index, slot in ipairs(slotButton.SocketDisplay.Slots) do
+		-- Can get gemID without the gem being loaded in item sparse (can't use GetItemGem)
+		local gemID = C_Item.GetItemGemID(item, index);
+		local hasGem = gemID ~= nil;
+	
+		if hasGem then
+			local gemItem = Item:CreateFromItemID(gemID);
+
+			-- 마우스 오버 툴팁을 추가한다
+			slot.Gem:EnableMouse(true)
+			slot.Gem:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(slot.Gem, "ANCHOR_RIGHT")
+				GameTooltip:SetHyperlink(gemItem:GetItemLink())
+				GameTooltip:Show()
+			end)
+			slot.Gem:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
+		else
+			-- 빈 슬롯 텍스처를 적용한다
+			if sockets and sockets[index] then
+				local texture = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", sockets[index].socketType);
+				slot.Gem:SetShown(true)
+				slot.Gem:SetTexture(texture)
+				slot.Gem:SetScript("OnEnter", function(self)
+					GameTooltip:SetOwner(slot.Gem, "ANCHOR_RIGHT")
+					GameTooltip:AddLine(sockets[index].socketName, nil, nil, nil, true)
+					GameTooltip:Show()
+				end)
+				slot.Gem:SetScript("OnLeave", function(self) GameTooltip:Hide() end)		
+			end
+		end
 	end
 end
 
