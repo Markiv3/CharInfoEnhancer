@@ -226,6 +226,11 @@ function EquipItemMixin:CanEnchant()
 	end
 
 	-- 격아 이후 확팩만 고려한다.
+	-- 판다리아 리믹스 캐릭터는 마부 불가능하다
+	if (PlayerGetTimerunningSeasonID() ~= nil) then
+		return false
+	end
+
 	-- 용군단 혹은 346렙 이상 템 (무기/반지/다리/손목/발/가슴/망토/허리 + 머리)
 	if (expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346) then
 		if itemClassID == Enum.ItemClass.Weapon or itemEquipLoc == "INVTYPE_FINGER" or itemEquipLoc == "INVTYPE_LEGS" or itemEquipLoc == "INVTYPE_WRIST" or itemEquipLoc == "INVTYPE_FEET" or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE" or itemEquipLoc == "INVTYPE_CLOAK" or itemEquipLoc == "INVTYPE_WAIST" or itemEquipLoc == "INVTYPE_HEAD" then
@@ -431,6 +436,10 @@ end
 function EquipItemUIMixin:UpdateDetailIcon_Gem()
 	if not self:IsEquipped() then return end
 	if not self.itemLinkData then return end
+
+	-- 판다리아 리믹스 캐릭터는 보석 및 홈 정보를 표시하지 않는다
+	-- 기본 UI에 포함되어 있다
+	if (PlayerGetTimerunningSeasonID() ~= nil) then return end
 
 	local gems = self.itemLinkData.gems
 	if gems then
