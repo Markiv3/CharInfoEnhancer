@@ -352,7 +352,7 @@ function frame:OnSocketDisplaySetItem(slotButton, unit, equipItem)
 	local showSocketDisplay = item ~= nil and PlayerGetTimerunningSeasonID() ~= nil;
 	slotButton.SocketDisplay:SetShown(showSocketDisplay);
 
-	if not showSocketDisplay then
+	if not showSocketDisplay or not equipItem then
 		return;
 	end
 	
@@ -374,17 +374,20 @@ function frame:OnSocketDisplaySetItem(slotButton, unit, equipItem)
 			end)
 			slot.Gem:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 		else
-			-- 빈 슬롯 텍스처를 적용한다
-			if sockets and sockets[index] then
-				local texture = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", sockets[index].socketType);
-				slot.Gem:SetShown(true)
-				slot.Gem:SetTexture(texture)
-				slot.Gem:SetScript("OnEnter", function(self)
-					GameTooltip:SetOwner(slot.Gem, "ANCHOR_RIGHT")
-					GameTooltip:AddLine(sockets[index].socketName, nil, nil, nil, true)
-					GameTooltip:Show()
-				end)
-				slot.Gem:SetScript("OnLeave", function(self) GameTooltip:Hide() end)		
+			-- 빈 슬롯 텍스처를 적용한다. 판다 리믹스는 다른 종류의 소켓이 하나의 아이템에 여럿 존재하지 않으므로 빈 소켓 하나 값을 계속 쓴다.
+			if sockets then
+				local _, socketInfo = next(sockets)
+				if socketInfo then
+					local texture = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", socketInfo.socketType);
+					slot.Gem:SetShown(true)
+					slot.Gem:SetTexture(texture)
+					slot.Gem:SetScript("OnEnter", function(self)
+						GameTooltip:SetOwner(slot.Gem, "ANCHOR_RIGHT")
+						GameTooltip:AddLine(socketInfo.socketName, nil, nil, nil, true)
+						GameTooltip:Show()
+					end)
+					slot.Gem:SetScript("OnLeave", function(self) GameTooltip:Hide() end)		
+				end
 			end
 		end
 	end
