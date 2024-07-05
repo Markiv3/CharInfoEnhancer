@@ -227,7 +227,11 @@ function EquipItemMixin:CanEnchant()
 
 	-- 격아 이후 확팩만 고려한다.
 	-- 판다리아 리믹스 캐릭터는 마부 불가능하다
+	-- 죽기 무기 마부(룬벼리기)는 가능하다
 	if (PlayerGetTimerunningSeasonID() ~= nil) then
+		if UnitClassBase(self:GetUnit()) == "DEATHKNIGHT" and itemClassID == Enum.ItemClass.Weapon then
+			return true
+		end
 		return false
 	end
 
