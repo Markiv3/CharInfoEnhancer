@@ -30,7 +30,7 @@ function frame:OnEquipmentFlyout_CreateButton()
 	
 	button.buttonID = buttonID
 
-	self.EquipmentFlyoutUI[buttonID] = self:CreateEquipItemUIMixin(nil, slotID)
+	self.EquipmentFlyoutUI[buttonID] = self:CreateEquipItemUIMixin()
 	self.EquipmentFlyoutUI[buttonID]:SetUpUI(button)
 	self.EquipmentFlyoutUI[buttonID].GetUnit = function(self) return "player" end
 	self.EquipmentFlyoutUI[buttonID].lastLocation = LASTLOCATION_NIL

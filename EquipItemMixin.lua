@@ -10,7 +10,7 @@ local MAX_DETAIL_ICON = 3
 local MAX_DETAIL_ICON_LINE = 2
 local DETAIL_ICON_SIZE = 12
 
-local _, _, ENCHANT_ICON = GetSpellInfo(28029)
+local _, _, ENCHANT_ICON = C_Spell.GetSpellInfo(28029)
 
 --[[-----------------------------------------------------------------------------
 -------------------------------------------------------------------------------]]
@@ -95,7 +95,7 @@ local function MakeItemLinkWithBonusID(itemID, bonusIDs)
 	local numberOfBonusIDs = bonusIDs and #bonusIDs or 0
 
 	if numberOfBonusIDs == 0 then
-		return select(2, GetItemInfo(itemID))	
+		return select(2, C_Item.GetItemInfo(itemID))	
 	end
 
 	local bonusIDsStr = ""
@@ -161,7 +161,7 @@ function EquipItemMixin:GetItemLink()
 	elseif self.tooltipData.hyperlink then
 		return self.tooltipData.hyperlink
 	elseif self.tooltipData.id then
-		return select(2, GetItemInfo(self.tooltipData.id))
+		return select(2, C_Item.GetItemInfo(self.tooltipData.id))
 	end
 	return nil
 end
@@ -215,7 +215,7 @@ function EquipItemMixin:CanEnchant()
 	if not self:IsEquipped() then return false end
 	if not self:GetItemLink() then return false end
 	
-	local _, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = GetItemInfo(self:GetItemLink())
+	local _, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = C_Item.GetItemInfo(self:GetItemLink())
 	local profEnchant = false
 
 	if self:IsPlayerItem() then
@@ -225,7 +225,6 @@ function EquipItemMixin:CanEnchant()
 		end
 	end
 
-	-- 격아 이후 확팩만 고려한다.
 	-- 판다리아 리믹스 캐릭터는 마부 불가능하다
 	-- 죽기 무기 마부(룬벼리기)는 가능하다
 	if (PlayerGetTimerunningSeasonID() ~= nil) then
@@ -235,8 +234,14 @@ function EquipItemMixin:CanEnchant()
 		return false
 	end
 
+	-- 격아 이후 확팩만 고려한다.
+	-- 내부전쟁 혹은 554 이상 템 (무기)
+	if (expID == LE_EXPANSION_WAR_WITHIN) or (self.itemLevel >= 553) then
+		if itemClassID == Enum.ItemClass.Weapon then
+			return true
+		end
 	-- 용군단 혹은 346렙 이상 템 (무기/반지/다리/손목/발/가슴/망토/허리 + 머리)
-	if (expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346) then
+	elseif (expID == LE_EXPANSION_DRAGONFLIGHT) or (self.itemLevel >= 346) then
 		if itemClassID == Enum.ItemClass.Weapon or itemEquipLoc == "INVTYPE_FINGER" or itemEquipLoc == "INVTYPE_LEGS" or itemEquipLoc == "INVTYPE_WRIST" or itemEquipLoc == "INVTYPE_FEET" or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE" or itemEquipLoc == "INVTYPE_CLOAK" or itemEquipLoc == "INVTYPE_WAIST" or itemEquipLoc == "INVTYPE_HEAD" then
 			return true
 		end
@@ -262,7 +267,7 @@ function EquipItemMixin:CanAddSlot()
 	if not self:IsEquipped() then return false end
 	if not self:GetItemLink() then return false end
 	
-	local _, _, itemQuality, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = GetItemInfo(self:GetItemLink())
+	local _, _, itemQuality, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, _, expID, _, _ = C_Item.GetItemInfo(self:GetItemLink())
 	local sockets = self:GetSockets()
 	local slotCount = (sockets and #sockets or 0) + (self.itemLinkData.gemCount)
 
@@ -344,7 +349,7 @@ function EquipItemUIMixin:ShowItemLevelStr(bShow)
 
 	self:UpdateItemLevel()
 	if self.itemLevel and self.itemLevel > 0 then
-		local itemQuality = CharInfoEnhancerOption.ItemLevelQualityColor and select(3, GetItemInfo(self:GetItemLink())) or 1
+		local itemQuality = CharInfoEnhancerOption.ItemLevelQualityColor and select(3, C_Item.GetItemInfo(self:GetItemLink())) or 1
 		self.UpperStr:SetText(ITEM_QUALITY_COLORS[itemQuality or 1].hex .. self.itemLevel .. FONT_COLOR_CODE_CLOSE)
 		self.UpperStr:Show()
 	else
@@ -450,7 +455,7 @@ function EquipItemUIMixin:UpdateDetailIcon_Gem()
 		for _, v in pairs(gems) do
 			local detailIcon = self:GetNextDetailIcon()	
 			local itemLink = MakeItemLinkWithBonusID(v.gemID, v.bonusIDs)
-			detailIcon.icon:SetTexture(GetItemIcon(v.gemID))
+			detailIcon.icon:SetTexture(C_Item.GetItemIconByID(v.gemID))
 			detailIcon.DetailIcon_OnEnter = function(detailIcon)
 				GameTooltip:SetOwner(detailIcon, "ANCHOR_RIGHT")
 				GameTooltip:SetHyperlink(itemLink)
@@ -491,7 +496,7 @@ function EquipItemUIMixin:UpdateDetailIcon_Enchant()
 		detailIcon.DetailIcon_OnLeave = function(detailIcon) GameTooltip:Hide() end
 	elseif self:CanEnchant() then		
 		local detailIcon = self:GetSecondLineDetailIcon()
-		detailIcon.icon:SetTexture(GetItemIcon(6218))
+		detailIcon.icon:SetTexture(C_Item.GetItemIconByID(6218))
 		detailIcon.DetailIcon_OnEnter = function(detailIcon)
 			GameTooltip:SetOwner(detailIcon, "ANCHOR_RIGHT")
 			GameTooltip:AddLine(ENCHANT_REQ_STR, nil, nil, nil, true)
@@ -500,7 +505,7 @@ function EquipItemUIMixin:UpdateDetailIcon_Enchant()
 		detailIcon.DetailIcon_OnLeave = function(detailIcon) GameTooltip:Hide() end
 	elseif self:CanAddSlot() then		
 		local detailIcon = self:GetSecondLineDetailIcon()
-		detailIcon.icon:SetTexture(GetItemIcon(192992))
+		detailIcon.icon:SetTexture(C_Item.GetItemIconByID(192992))
 		detailIcon.DetailIcon_OnEnter = function(detailIcon)
 			GameTooltip:SetOwner(detailIcon, "ANCHOR_RIGHT")
 			GameTooltip:AddLine(ADDSLOT_REQ_STR, nil, nil, nil, true)

@@ -1,8 +1,8 @@
-## Interface: 100207
+## Interface: 110000, 110002
 ## Title: Character Info Enhancer
 ## Notes: 캐릭터창 정보 및 캐릭터 아이템 레벨 관련 기능 강화
 ## Author: Alkaid
-## Version: 10.2.7-3 (2024/07/05)
+## Version: 11.0.0-1 (2024/07/24)
 ## SavedVariables: CharInfoEnhancerOption
 ## IconAtlas: warfront_asset_armor_upgrade_3
 
