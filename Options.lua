@@ -10,7 +10,7 @@ local function checkboxOnClick(self)
 	self:SetValue(checked)
 end
 
-local function newCheckbox(parent, name, label)
+local function newCIEOptionCheckbox(parent, name, label)
 
 	label = label or L[name]
 	
@@ -26,6 +26,11 @@ local function newCheckbox(parent, name, label)
 	check.tooltipText = label
 	check:SetScript('OnClick', function(self)
 		CharInfoEnhancerOption[name] = self:GetChecked()
+		if (self:GetChecked()) then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
 	end
 	)
 
@@ -35,7 +40,7 @@ end
 local CIEOptions = CreateFrame('Frame', nil, InterfaceOptionsFramePanelContainer)
 CIEOptions:Hide()
 CIEOptions:SetAllPoints()
-CIEOptions.name = addonName
+CIEOptions.name = C_AddOns.GetAddOnMetadata(addonName, "Title")
 local title = CIEOptions:CreateFontString(null, "ARTWORK", "GameFontNormalLarge")
 title:SetPoint("TOPLEFT", 16, -16)
 title:SetText(CIEOptions.name)
@@ -47,16 +52,21 @@ subText:SetJustifyV('TOP')
 subText:SetJustifyH('LEFT')
 subText:SetPoint('TOPLEFT', title, 'BOTTOMLEFT', 0, -8)
 subText:SetPoint('RIGHT', -32, 0)
-subText:SetText(L["notes"] .. "\n" .. L["version"] .. " " .. GetAddOnMetadata(addonName, "Version"))
+subText:SetText(L["notes"] .. "\n" .. L["version"] .. " " .. C_AddOns.GetAddOnMetadata(addonName, "Version"))
 
-local tooltipInspect = newCheckbox(CIEOptions, "TooltipInspect")
+local tooltipInspect = newCIEOptionCheckbox(CIEOptions, "TooltipInspect")
 tooltipInspect:SetPoint("TOPLEFT", subText, "BOTTOMLEFT", 0, -8)
-local statPrecision = newCheckbox(CIEOptions, "StatPrecision")
+local statPrecision = newCIEOptionCheckbox(CIEOptions, "StatPrecision")
 statPrecision:SetPoint("TOPLEFT", tooltipInspect, "BOTTOMLEFT", 0, -8)
-local avgILvlPrecision = newCheckbox(CIEOptions, "AvgItemLevelPrecision")
+local avgILvlPrecision = newCIEOptionCheckbox(CIEOptions, "AvgItemLevelPrecision")
 avgILvlPrecision:SetPoint("TOPLEFT", statPrecision, "BOTTOMLEFT", 0, -8)
-local iLvlQualityColor = newCheckbox(CIEOptions, "ItemLevelQualityColor")
+local iLvlQualityColor = newCIEOptionCheckbox(CIEOptions, "ItemLevelQualityColor")
 iLvlQualityColor:SetPoint("TOPLEFT", avgILvlPrecision, "BOTTOMLEFT", 0, -8)
-InterfaceOptions_AddCategory(CIEOptions, addonName)
+
+if InterfaceOptions_AddCategory then
+	InterfaceOptions_AddCategory(CIEOptions)
+elseif Settings and Settings.RegisterAddOnCategory and Settings.RegisterCanvasLayoutCategory then
+	Settings.RegisterAddOnCategory(select(1, Settings.RegisterCanvasLayoutCategory(CIEOptions, CIEOptions.name)));
+end
 
 addon.OptionPanel = CIEOptions

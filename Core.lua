@@ -80,6 +80,7 @@ function frame:PLAYER_LOGIN()
 
 	-- 각종 함수 hook, override
 	PaperDollFrame_SetItemLevel = OverridePaperDollFrame_SetItemLevel
+	PaperDollFrame_SetLevel = OverridePaperDollFrame_SetLevel
 
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function (statFrame, label, text, isPercentage, numericValue)
 		frame:OnPaperDollFrame_SetLabelAndText(statFrame, label, text, isPercentage, numericValue)
@@ -164,6 +165,12 @@ function frame:PLAYER_LOGIN()
 		frame:UpdatePlayerEquipItem()
 		frame:RefreshEquipmentFlyoutUI()
 	end)
+
+	-- 영웅 특성 아이콘
+	self.heroTalentIcon = CreateFrame("Frame", addonName.."HeroTalentIcon", CharacterFrame.NineSlice, "HeroTalentIconFrame")
+	self.heroTalentIcon:SetPoint("BOTTOMRIGHT", CharacterFramePortrait, "BOTTOMRIGHT", 80, -20)
+	self.heroTalentIcon:SetScale(0.2)
+	self.heroTalentIcon:Hide();
 
 	frame:PLAYER_LOGIN_EquipmentFlyout()
 
@@ -290,6 +297,7 @@ end
 --[[-----------------------------------------------------------------------------
 -------------------------------------------------------------------------------]]
 
+
 function OverridePaperDollFrame_SetItemLevel(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -315,6 +323,60 @@ function OverridePaperDollFrame_SetItemLevel(statFrame, unit)
 
 	if ( avgItemLevel ~= avgItemLevelPvP ) then
 		statFrame.tooltip2 = statFrame.tooltip2.."\n\n"..string.gsub(STAT_AVERAGE_PVP_ITEM_LEVEL, "%%d", "%%.2f"):format(avgItemLevelPvP);
+	end
+end
+
+function OverridePaperDollFrame_SetLevel()
+	local primaryTalentTree = GetSpecialization();
+	local classDisplayName, class = UnitClass("player");
+	local classColorString = RAID_CLASS_COLORS[class].colorStr;
+	local specName, _;
+
+	if (primaryTalentTree) then
+		_, specName = GetSpecializationInfo(primaryTalentTree, nil, nil, nil, UnitSex("player"));
+	end
+
+	local level = UnitLevel("player");
+	local effectiveLevel = UnitEffectiveLevel("player");
+
+	if ( effectiveLevel ~= level ) then
+		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
+	end
+
+	if (specName and specName ~= "") then
+		if C_ClassTalents.GetActiveHeroTalentSpec() ~= nil then
+			local heroTalentInfo = C_Traits.GetSubTreeInfo(C_ClassTalents.GetActiveConfigID(), C_ClassTalents.GetActiveHeroTalentSpec())
+			specName = heroTalentInfo.name .. " " .. specName		
+			frame.heroTalentIcon.SpecImage:SetAtlas(heroTalentInfo.iconElementID);
+			frame.heroTalentIcon:Show()
+		else
+			frame.heroTalentIcon:Hide()
+		end
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
+	else
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
+	end
+
+	local showTrialCap = false;
+	if (GameLimitedMode_IsActive()) then
+		local rLevel = GetRestrictedAccountData();
+		if (UnitLevel("player") >= rLevel) then
+			showTrialCap = true;
+		end
+	end
+
+	CharacterTrialLevelErrorText:SetShown(showTrialCap);
+	if (showTrialCap) then
+		CharacterLevelText:SetPoint("CENTER", PaperDollFrame, "TOP", 0, -36);
+	else
+		CharacterLevelText:SetPoint("CENTER", PaperDollFrame, "TOP", 0, -42);
+	end
+end
+
+function frame:OnCharacterFrame_UpdatePortrait()
+	if C_ClassTalents.GetActiveHeroTalentSpec() > 0 then
+	else
+		self.HeroTalentIcon:Hide()
 	end
 end
 
@@ -451,7 +513,7 @@ function frame:GetAvgItemLevel(equipTable)
 	function CheckTwoHand(unit, slotID)
 		local itemLink = GetInventoryItemLink(unit, slotID)
 		if not itemLink then return nil end
-		local itemEquipLoc = select(9, GetItemInfo(itemLink))
+		local itemEquipLoc = select(9, C_Item.GetItemInfo(itemLink))
 		return ("INVTYPE_2HWEAPON" == itemEquipLoc or "INVTYPE_RANGED" == itemEquipLoc or "INVTYPE_RANGEDRIGHT" == itemEquipLoc)
 	end
 	local mainHandLevel = equipTable[INVSLOT_MAINHAND]:IsEquipped() and equipTable[INVSLOT_MAINHAND].itemLevel or 0
