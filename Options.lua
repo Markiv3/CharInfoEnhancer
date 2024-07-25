@@ -52,7 +52,7 @@ subText:SetJustifyV('TOP')
 subText:SetJustifyH('LEFT')
 subText:SetPoint('TOPLEFT', title, 'BOTTOMLEFT', 0, -8)
 subText:SetPoint('RIGHT', -32, 0)
-subText:SetText(L["notes"] .. "\n" .. L["version"] .. " " .. C_AddOns.GetAddOnMetadata(addonName, "Version"))
+subText:SetText(C_AddOns.GetAddOnMetadata(addonName, "Notes") .. "\n" .. L["version"] .. " " .. C_AddOns.GetAddOnMetadata(addonName, "Version"))
 
 local tooltipInspect = newCIEOptionCheckbox(CIEOptions, "TooltipInspect")
 tooltipInspect:SetPoint("TOPLEFT", subText, "BOTTOMLEFT", 0, -8)
