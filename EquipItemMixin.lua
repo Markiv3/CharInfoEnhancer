@@ -3,7 +3,7 @@ local frame = _G[addonName]
 local L = addon.L
 
 local ITEM_LEVEL_STR_1 = string.gsub(ITEM_LEVEL, "%%d", "(.+)")
-local ITEM_LEVEL_STR_2 = string.gsub(ITEM_LEVEL, "%%d", "(.+) \((.+)\)")
+local ITEM_LEVEL_STR_2 = string.gsub(ITEM_LEVEL, "%%d", "(.+) %((.+)%)")
 local ENCHANT_REQ_STR = L["canenchant"]
 --local ENCHANT_REQ_STR = "마법부여가 가능한 부위입니다."
 local ADDSLOT_REQ_STR = L["cangem"]
