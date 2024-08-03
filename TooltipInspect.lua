@@ -1,9 +1,9 @@
-local addonName = ...
+local addonName, addonTable = ...
 local frame = _G[addonName]
 
 local TOOLTIPINSPECT_DELAY = 1.0
 local TOOLTIPINSPECT_LASTINSPECT_DELAY = 2.0
-local ITEMLEVEL_PREFIX_STR = "아이템 레벨:|cffffffff"
+local ITEMLEVEL_FORMAT = NORMAL_FONT_COLOR_CODE .. addonTable.Strings["ItemLevel"] .. ": " .. FONT_COLOR_CODE_CLOSE .. HIGHLIGHT_FONT_COLOR_CODE .."%s" .. FONT_COLOR_CODE_CLOSE
 
 frame.InspectInfo = nil
 frame.lastInspectUnitTime = 0
@@ -33,9 +33,9 @@ function frame:OnTooltipSetUnit(tooltip, tooltipData)
 	-- Get the unit -- Check the UnitFrame unit if this tip is from a concated unit, such as "targettarget".
 	local _, unit = tooltip:GetUnit();
 	if (not unit) then
-		local mFocus = GetMouseFocus();
-		if (mFocus) and (mFocus.unit) then
-			unit = mFocus.unit;
+		local frames = GetMouseFoci();
+		if frames and frames[1] and frames[1].unit then
+			unit = frames[1].unit;
 		end
 	end
 
@@ -47,7 +47,7 @@ function frame:OnTooltipSetUnit(tooltip, tooltipData)
 	-- No need for inspection on the player
 	if (UnitIsUnit(unit, "player")) then
 		local _, avgItemLevelEquipped = GetAverageItemLevel()
-		local avgItemLevelStr = format("%s %s", ITEMLEVEL_PREFIX_STR, self:MakeItemLevelStr(avgItemLevelEquipped));
+		local avgItemLevelStr = format(ITEMLEVEL_FORMAT, self:MakeItemLevelStr(avgItemLevelEquipped));
 		GameTooltip:AddLine(avgItemLevelStr)
 		GameTooltip:Show()
 		return;
@@ -123,7 +123,7 @@ function frame:UpdateMouseOverEquipItem()
 		
 		local calcAvgLevel = frame:GetAvgItemLevel(self.MouseOverEquip)
 		
-		local avgItemLevelStr = format("%s %s", ITEMLEVEL_PREFIX_STR, self:MakeItemLevelStr(calcAvgLevel));
+		local avgItemLevelStr = format(ITEMLEVEL_FORMAT, self:MakeItemLevelStr(calcAvgLevel));
 		GameTooltip:AddLine(avgItemLevelStr)
 		GameTooltip:Show()
 	end

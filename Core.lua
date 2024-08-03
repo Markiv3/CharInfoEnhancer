@@ -1,4 +1,4 @@
-local addonName = ...
+local addonName, addonTable = ...
 
 local frame = CreateFrame("Frame", addonName)
 frame:SetScript("OnUpdate", function(self, elapsed) self:OnUpdate(elapsed) end)
@@ -28,7 +28,7 @@ local EquipSlot = {
 	--[19] = "TabardSlot",
 }
 
-local AVG_ITEM_LEVEL_STR = "평균: %s"
+local AVG_ITEM_LEVEL_STR = addonTable.Strings["AvgItemLevel"] ..": %s"
 local REFRESH_RATE = 1
 
 frame.lastRefreshTimePlayer = 0
@@ -139,7 +139,7 @@ function frame:PLAYER_LOGIN()
 	durCheck:SetSize(16,16)
 	_G[durCheck:GetName() .. "Text"]:SetFont(font, 10, flags)
 	_G[durCheck:GetName() .. "Text"]:SetTextColor(1,1,1)
-	_G[durCheck:GetName() .. "Text"]:SetText("내구도")
+	_G[durCheck:GetName() .. "Text"]:SetText(addonTable.Strings["Durability"])
 	_G[durCheck:GetName() .. "Text"]:ClearAllPoints()
 	_G[durCheck:GetName() .. "Text"]:SetPoint("LEFT", durCheck, "RIGHT", 0, 1)
 	durCheck:SetChecked(CharInfoEnhancerOption.ShowDurability)
@@ -154,7 +154,7 @@ function frame:PLAYER_LOGIN()
 	detailCheck:SetSize(16,16)
 	_G[detailCheck:GetName() .. "Text"]:SetFont(font, 10, flags)
 	_G[detailCheck:GetName() .. "Text"]:SetTextColor(1,1,1)
-	_G[detailCheck:GetName() .. "Text"]:SetText("자세히")
+	_G[detailCheck:GetName() .. "Text"]:SetText(addonTable.Strings["Details"])
 	_G[detailCheck:GetName() .. "Text"]:ClearAllPoints()
 	_G[detailCheck:GetName() .. "Text"]:SetPoint("LEFT", detailCheck, "RIGHT", 0, 0)
 	detailCheck:SetChecked(CharInfoEnhancerOption.ShowDetailIcon)

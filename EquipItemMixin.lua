@@ -1,16 +1,11 @@
-local addonName = ...
+local addonName, addonTable = ...
 local frame = _G[addonName]
-
-local ITEM_LEVEL_STR_1 = string.gsub(ITEM_LEVEL, "%%d", "(.+)")
-local ITEM_LEVEL_STR_2 = string.gsub(ITEM_LEVEL, "%%d", "(.+) \((.+)\)")
-local ENCHANT_REQ_STR = "마법부여가 가능한 부위입니다."
-local ADDSLOT_REQ_STR = "보석홈을 추가 가능한 부위입니다."
 
 local MAX_DETAIL_ICON = 3
 local MAX_DETAIL_ICON_LINE = 2
 local DETAIL_ICON_SIZE = 12
 
-local _, _, ENCHANT_ICON = C_Spell.GetSpellInfo(28029)
+local ENCHANT_ICON = C_Spell.GetSpellInfo(28029).iconID
 
 --[[-----------------------------------------------------------------------------
 -------------------------------------------------------------------------------]]
@@ -130,25 +125,8 @@ end
 
 function EquipItemMixin:GetItemLevel()
 	if not self:IsEquipped() then return nil end
-	for _, line in pairs(self.tooltipData.lines) do
-		local text = line.leftText
-		local iLevel = string.match(text, ITEM_LEVEL_STR_1)
-		if iLevel ~= nil then
-			local retval = tonumber(iLevel)
-			if(retval ~= nil) then
-				return retval
-			else
-				local iLevel2 = string.match(text, ITEM_LEVEL_STR_2)
-				if iLevel2 ~= nil then
-					local retval2 = tonumber(iLevel2)
-					if(retval2 ~= nil) then
-						return retval2
-					end
-				end				
-			end
-		end
-	end
-	return nil
+	if not self:GetItemLink() then return nil end
+	return C_Item.GetDetailedItemLevelInfo(self:GetItemLink())
 end
 
 function EquipItemMixin:IsEquipped()
@@ -499,7 +477,7 @@ function EquipItemUIMixin:UpdateDetailIcon_Enchant()
 		detailIcon.icon:SetTexture(C_Item.GetItemIconByID(6218))
 		detailIcon.DetailIcon_OnEnter = function(detailIcon)
 			GameTooltip:SetOwner(detailIcon, "ANCHOR_RIGHT")
-			GameTooltip:AddLine(ENCHANT_REQ_STR, nil, nil, nil, true)
+			GameTooltip:AddLine(addonTable.Strings["CanEnchant"], nil, nil, nil, true)
 			GameTooltip:Show()
 		end
 		detailIcon.DetailIcon_OnLeave = function(detailIcon) GameTooltip:Hide() end
@@ -508,7 +486,7 @@ function EquipItemUIMixin:UpdateDetailIcon_Enchant()
 		detailIcon.icon:SetTexture(C_Item.GetItemIconByID(192992))
 		detailIcon.DetailIcon_OnEnter = function(detailIcon)
 			GameTooltip:SetOwner(detailIcon, "ANCHOR_RIGHT")
-			GameTooltip:AddLine(ADDSLOT_REQ_STR, nil, nil, nil, true)
+			GameTooltip:AddLine(addonTable.Strings["CanAddSlot"], nil, nil, nil, true)
 			GameTooltip:Show()
 		end
 		detailIcon.DetailIcon_OnLeave = function(detailIcon) GameTooltip:Hide() end
